@@ -39,7 +39,7 @@ jobs:
           echo "::set-output name=repo_list::${repo_list}"
 
       - name: Mirror Git
-        uses: k8scat/action-mirror-git@v0.0.25
+        uses: k8scat/action-mirror-git@v0.0.27
         with:
           source_protocol: https
           source_host: github.com
@@ -78,3 +78,4 @@ jobs:
             fi
             gh repo delete "${INPUT_DEST_USERNAME}/${REPO_NAME}" --confirm
           lark_webhook: ${{ secrets.LARK_WEBHOOK }}
+          ignore_error: "true"
