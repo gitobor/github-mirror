@@ -48,7 +48,7 @@ jobs:
           dest_protocol: https
           dest_host: github.com
           dest_username: k8scat-archived
-          dest_token: ${{ secrets.GITHUB_TOKEN }}
+          dest_token: ${{ secrets.DEST_TOKEN }}
           dest_token_username: gitobor
           push_tags: "true"
           mirror_repos: ${{ steps.list_repos.outputs.repo_list }}
