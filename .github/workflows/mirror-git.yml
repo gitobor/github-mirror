@@ -39,7 +39,7 @@ jobs:
           echo "::set-output name=repo_list::${repo_list}"
 
       - name: Mirror Git
-        uses: k8scat/action-mirror-git@v0.0.24
+        uses: k8scat/action-mirror-git@v0.0.25
         with:
           source_protocol: https
           source_host: github.com
@@ -61,11 +61,12 @@ jobs:
               gh auth status
             fi
 
-            repo="${INPUT_DEST_USERNAME}/${REPO_NAME}"
-            found=$(gh repo list ${INPUT_DEST_USERNAME} -L 1000 --json name -t '{{range .}}{{tablerow (printf "\"%s\"" .name)}}{{end}}' | grep -i "\"${repo}\""")
-            if [[ -z "${found}" ]]; then
-              gh repo create "${INPUT_DEST_USERNAME}/${REPO_NAME}" --private
+            found=$(gh repo list ${INPUT_DEST_USERNAME} -L 1000 --json name -t '{{range .}}{{tablerow (printf "\"%s\"" .name)}}{{end}}' | grep -i "\"${REPO_NAME}\"")
+            if [[ -n "${found}" ]]; then
+              echo "repo ${REPO_NAME} already exists"
+              exit 0
             fi
+            gh repo create "${INPUT_DEST_USERNAME}/${REPO_NAME}" --private
           force_push: "true"
           dest_delete_repo_script: |
             # delete repo via github cli
