@@ -26,16 +26,7 @@ jobs:
       - name: List repos
         id: list_repos
         run: |
-          gh repo list k8scat -L 1000 > /tmp/repos.txt
-          cat /tmp/repos.txt | while read -r repo; do
-            repo_name=$(echo ${repo} | awk '{print $1}' | awk -F/ '{print $2}')
-            if [[ -f "/tmp/repo_list.txt" ]]; then
-              echo -n ",${repo_name}" >> /tmp/repo_list.txt
-            else
-              echo -n "${repo_name}" >> /tmp/repo_list.txt
-            fi
-          done
-          repo_list=$(cat /tmp/repo_list.txt)
+          repo_list=$(gh repo list k8scat -L 1000 --json name -t '{{range $i, $n := .}}{{if (gt $i 0)}},{{end}}{{$n.name}}{{end}}')
           echo "::set-output name=repo_list::${repo_list}"
 
       - name: Mirror Git
@@ -61,7 +52,7 @@ jobs:
               gh auth status
             fi
 
-            found=$(gh repo list ${INPUT_DEST_USERNAME} -L 1000 --json name -t '{{range .}}{{tablerow (printf "\"%s\"" .name)}}{{end}}' | grep -i "\"${REPO_NAME}\"")
+            found=$(gh repo list ${INPUT_DEST_USERNAME} -L 1000 --json name -t "{{range .}}{{if (eq .name \"${REPO_NAME}\")}}{{.name}}{{end}}{{end}}")
             if [[ -n "${found}" ]]; then
               echo "repo ${REPO_NAME} already exists"
               exit 0
